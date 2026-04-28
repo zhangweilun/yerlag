@@ -1,0 +1,656 @@
+// valuation.api - go-zero API definition for ETH Valuation Dashboard
+
+type (
+	TimeSeriesPoint {
+		Timestamp int64   `json:"timestamp"`
+		Value     float64 `json:"value"`
+	}
+
+	Meta {
+		LastUpdated int64  `json:"lastUpdated"`
+		Source      string `json:"source"`
+		NextRefresh int64  `json:"nextRefresh"`
+	}
+
+	// ---- Base Response ----
+	BaseResp {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+
+	// ---- Overview ----
+	OverviewResp {
+		Code    int          `json:"code"`
+		Message string       `json:"message"`
+		Data    OverviewData `json:"data"`
+		Meta    Meta         `json:"meta"`
+	}
+
+	OverviewData {
+		CurrentPrice    float64 `json:"currentPrice"`
+		PriceChange24h  float64 `json:"priceChange24h"`
+		MarketCapRank   int     `json:"marketCapRank"`
+		ValuationScore  float64 `json:"valuationScore"`
+		ValuationStatus string  `json:"valuationStatus"`
+	}
+
+	// ---- On-Chain: Burn ----
+	BurnDataResp {
+		Code    int      `json:"code"`
+		Message string   `json:"message"`
+		Data    BurnData `json:"data"`
+		Meta    Meta     `json:"meta"`
+	}
+
+	BurnData {
+		Daily              float64           `json:"daily"`
+		Weekly             float64           `json:"weekly"`
+		Monthly            float64           `json:"monthly"`
+		Cumulative         float64           `json:"cumulative"`
+		AnnualizedBurnRate float64           `json:"annualizedBurnRate"`
+		DailyHistory       []TimeSeriesPoint `json:"dailyHistory"`
+	}
+
+	// ---- On-Chain: Gas ----
+	GasDataResp {
+		Code    int     `json:"code"`
+		Message string  `json:"message"`
+		Data    GasData `json:"data"`
+		Meta    Meta    `json:"meta"`
+	}
+
+	GasData {
+		CurrentAvgGwei     float64           `json:"currentAvgGwei"`
+		CurrentAvgUsd      float64           `json:"currentAvgUsd"`
+		DailyFeeRevenueEth float64           `json:"dailyFeeRevenueEth"`
+		DailyFeeRevenueUsd float64           `json:"dailyFeeRevenueUsd"`
+		PriorityFeeShare   float64           `json:"priorityFeeShare"`
+		BaseFeeShare       float64           `json:"baseFeeShare"`
+		AnnualizedRevenue  float64           `json:"annualizedRevenue"`
+		PriceToFeeRatio    float64           `json:"priceToFeeRatio"`
+		GasHistory         []TimeSeriesPoint `json:"gasHistory"`
+		IsHighFee          bool              `json:"isHighFee"`
+	}
+
+	// ---- On-Chain: Activity ----
+	ActivityDataResp {
+		Code    int          `json:"code"`
+		Message string       `json:"message"`
+		Data    ActivityData `json:"data"`
+		Meta    Meta         `json:"meta"`
+	}
+
+	L2TransactionData {
+		Network           string `json:"network"`
+		DailyTransactions int64  `json:"dailyTransactions"`
+	}
+
+	ActivityData {
+		DailyActiveAddresses int64               `json:"dailyActiveAddresses"`
+		DAAMovingAvg7d       float64             `json:"daaMovingAvg7d"`
+		DailyTransactions    int64               `json:"dailyTransactions"`
+		DailyNewAddresses    int64               `json:"dailyNewAddresses"`
+		NVTRatio             float64             `json:"nvtRatio"`
+		NVTHistoricalMedian  float64             `json:"nvtHistoricalMedian"`
+		NVTPercentile        float64             `json:"nvtPercentile"`
+		NVTSignal            string              `json:"nvtSignal"`
+		L2Comparison         []L2TransactionData `json:"l2Comparison"`
+		TransactionHistory   []TimeSeriesPoint   `json:"transactionHistory"`
+	}
+
+	// ---- On-Chain: TVL ----
+	TVLDataResp {
+		Code    int     `json:"code"`
+		Message string  `json:"message"`
+		Data    TVLData `json:"data"`
+		Meta    Meta    `json:"meta"`
+	}
+
+	ProtocolTVL {
+		Name   string  `json:"name"`
+		TVLUsd float64 `json:"tvlUsd"`
+		Share  float64 `json:"share"`
+	}
+
+	TVLData {
+		TotalTVLUsd         float64           `json:"totalTvlUsd"`
+		TotalTVLEth         float64           `json:"totalTvlEth"`
+		TVLToMarketCapRatio float64           `json:"tvlToMarketCapRatio"`
+		ETHTVLDominance     float64           `json:"ethTvlDominance"`
+		TopProtocols        []ProtocolTVL     `json:"topProtocols"`
+		TVLHistory          []TimeSeriesPoint `json:"tvlHistory"`
+		DominanceHistory    []TimeSeriesPoint `json:"dominanceHistory"`
+	}
+
+	// ---- On-Chain: Supply ----
+	SupplyDataResp {
+		Code    int        `json:"code"`
+		Message string     `json:"message"`
+		Data    SupplyData `json:"data"`
+		Meta    Meta       `json:"meta"`
+	}
+
+	SupplyData {
+		TotalSupply            float64           `json:"totalSupply"`
+		StakedAmount           float64           `json:"stakedAmount"`
+		DeFiLocked             float64           `json:"defiLocked"`
+		ExchangeBalance        float64           `json:"exchangeBalance"`
+		OtherAmount            float64           `json:"otherAmount"`
+		NetIssuance            float64           `json:"netIssuance"`
+		IsDeflationary         bool              `json:"isDeflationary"`
+		AnnualInflationRate    float64           `json:"annualInflationRate"`
+		SupplyHistory          []TimeSeriesPoint `json:"supplyHistory"`
+		ExchangeBalanceHistory []TimeSeriesPoint `json:"exchangeBalanceHistory"`
+	}
+
+	// ---- Market ----
+	MarketDataResp {
+		Code    int        `json:"code"`
+		Message string     `json:"message"`
+		Data    MarketData `json:"data"`
+		Meta    Meta       `json:"meta"`
+	}
+
+	ExchangePrice {
+		Exchange string  `json:"exchange"`
+		Price    float64 `json:"price"`
+		Spread   float64 `json:"spread"`
+	}
+
+	MarketData {
+		CurrentPrice          float64         `json:"currentPrice"`
+		PriceChange24h        float64         `json:"priceChange24h"`
+		Volume24h             float64         `json:"volume24h"`
+		Volume7d              float64         `json:"volume7d"`
+		CirculatingMarketCap  float64         `json:"circulatingMarketCap"`
+		FullyDilutedMarketCap float64         `json:"fullyDilutedMarketCap"`
+		MarketCapRank         int             `json:"marketCapRank"`
+		ATHPrice              float64         `json:"athPrice"`
+		ATHDrawdown           float64         `json:"athDrawdown"`
+		ExchangePrices        []ExchangePrice `json:"exchangePrices"`
+	}
+
+	// ---- Market: Price History ----
+	PriceHistoryReq {
+		TimeRange string `form:"timeRange,optional"`
+	}
+
+	OHLCVPoint {
+		Timestamp int64   `json:"timestamp"`
+		Open      float64 `json:"open"`
+		High      float64 `json:"high"`
+		Low       float64 `json:"low"`
+		Close     float64 `json:"close"`
+		Volume    float64 `json:"volume"`
+	}
+
+	PriceHistoryResp {
+		Code    int          `json:"code"`
+		Message string       `json:"message"`
+		Data    []OHLCVPoint `json:"data"`
+		Meta    Meta         `json:"meta"`
+	}
+
+	// ---- Valuation ----
+	ValuationResp {
+		Code    int            `json:"code"`
+		Message string         `json:"message"`
+		Data    ValuationScore `json:"data"`
+		Meta    Meta           `json:"meta"`
+	}
+
+	RadarDataPoint {
+		Dimension string  `json:"dimension"`
+		Score     float64 `json:"score"`
+		Label     string  `json:"label"`
+	}
+
+	MVRVResult {
+		Ratio               float64           `json:"ratio"`
+		HistoricalPercentile float64          `json:"historicalPercentile"`
+		Signal              string            `json:"signal"`
+		History             []TimeSeriesPoint `json:"history"`
+	}
+
+	PriceToFeeResult {
+		Ratio               float64 `json:"ratio"`
+		HistoricalPercentile float64 `json:"historicalPercentile"`
+		Signal              string  `json:"signal"`
+	}
+
+	DCFAssumptions {
+		DiscountRate       float64 `json:"discountRate"`
+		GrowthRate         float64 `json:"growthRate"`
+		TerminalGrowthRate float64 `json:"terminalGrowthRate"`
+		ProjectionYears    int     `json:"projectionYears"`
+	}
+
+	DCFResult {
+		FairValueLow  float64        `json:"fairValueLow"`
+		FairValueMid  float64        `json:"fairValueMid"`
+		FairValueHigh float64        `json:"fairValueHigh"`
+		Assumptions   DCFAssumptions `json:"assumptions"`
+	}
+
+	StockToFlowResult {
+		Ratio      float64 `json:"ratio"`
+		ModelPrice float64 `json:"modelPrice"`
+		Deviation  float64 `json:"deviation"`
+	}
+
+	NVTResult {
+		Ratio               float64 `json:"ratio"`
+		HistoricalPercentile float64 `json:"historicalPercentile"`
+		Signal              string  `json:"signal"`
+	}
+
+	ETHBTCResult {
+		Ratio               float64 `json:"ratio"`
+		HistoricalPercentile float64 `json:"historicalPercentile"`
+		Signal              string  `json:"signal"`
+	}
+
+	ValuationBreakdown {
+		MVRVScore        MVRVResult        `json:"mvrvScore"`
+		PriceToFeeScore  PriceToFeeResult  `json:"priceToFeeScore"`
+		DCFValuation     DCFResult         `json:"dcfValuation"`
+		StockToFlowScore StockToFlowResult `json:"stockToFlowScore"`
+		NVTScore         NVTResult         `json:"nvtScore"`
+		ETHBTCScore      ETHBTCResult      `json:"ethBtcScore"`
+	}
+
+	ValuationScore {
+		Overall   float64            `json:"overall"`
+		Status    string             `json:"status"`
+		Breakdown ValuationBreakdown `json:"breakdown"`
+		RadarData []RadarDataPoint   `json:"radarData"`
+	}
+
+	// ---- Valuation: DCF ----
+	DCFReq {
+		DiscountRate       float64 `form:"discountRate,optional"`
+		GrowthRate         float64 `form:"growthRate,optional"`
+		TerminalGrowthRate float64 `form:"terminalGrowthRate,optional"`
+		ProjectionYears    int     `form:"projectionYears,optional"`
+	}
+
+	DCFResp {
+		Code    int       `json:"code"`
+		Message string    `json:"message"`
+		Data    DCFResult `json:"data"`
+		Meta    Meta      `json:"meta"`
+	}
+
+	// ---- Valuation: Distribution ----
+	DistributionResp {
+		Code    int              `json:"code"`
+		Message string           `json:"message"`
+		Data    DistributionData `json:"data"`
+		Meta    Meta             `json:"meta"`
+	}
+
+	DistributionData {
+		Values            []float64 `json:"values"`
+		CurrentValue      float64   `json:"currentValue"`
+		CurrentPercentile float64   `json:"currentPercentile"`
+	}
+
+	// ---- Institutional: ETF ----
+	ETFDataResp {
+		Code    int     `json:"code"`
+		Message string  `json:"message"`
+		Data    ETFData `json:"data"`
+		Meta    Meta    `json:"meta"`
+	}
+
+	ETFHolding {
+		Issuer          string            `json:"issuer"`
+		Ticker          string            `json:"ticker"`
+		HoldingsETH     float64           `json:"holdingsEth"`
+		HoldingsUSD     float64           `json:"holdingsUsd"`
+		DailyNetFlowUSD float64           `json:"dailyNetFlowUsd"`
+		MarketShare     float64           `json:"marketShare"`
+		FlowHistory     []TimeSeriesPoint `json:"flowHistory"`
+	}
+
+	ETFData {
+		ETFs                    []ETFHolding      `json:"etfs"`
+		TotalHoldingsETH        float64           `json:"totalHoldingsEth"`
+		TotalHoldingsUSD        float64           `json:"totalHoldingsUsd"`
+		HoldingsPercentOfSupply float64           `json:"holdingsPercentOfSupply"`
+		CumulativeNetFlow       float64           `json:"cumulativeNetFlow"`
+		NetFlowHistory          []TimeSeriesPoint `json:"netFlowHistory"`
+	}
+
+	// ---- Institutional: Grayscale ----
+	GrayscaleDataResp {
+		Code    int           `json:"code"`
+		Message string        `json:"message"`
+		Data    GrayscaleData `json:"data"`
+		Meta    Meta          `json:"meta"`
+	}
+
+	GrayscaleData {
+		HoldingsETH     float64           `json:"holdingsEth"`
+		NAV             float64           `json:"nav"`
+		PremiumDiscount float64           `json:"premiumDiscount"`
+		PremiumHistory  []TimeSeriesPoint `json:"premiumHistory"`
+	}
+
+	// ---- Institutional: Holdings ----
+	InstitutionalHoldingsResp {
+		Code    int                   `json:"code"`
+		Message string                `json:"message"`
+		Data    InstitutionalHoldings `json:"data"`
+		Meta    Meta                  `json:"meta"`
+	}
+
+	InstitutionEntry {
+		Name        string  `json:"name"`
+		HoldingsETH float64 `json:"holdingsEth"`
+		HoldingsUSD float64 `json:"holdingsUsd"`
+	}
+
+	InstitutionalHoldings {
+		Institutions      []InstitutionEntry `json:"institutions"`
+		CMEFuturesOI      float64            `json:"cmeFuturesOI"`
+		CMEFuturesHistory []TimeSeriesPoint  `json:"cmeFuturesHistory"`
+	}
+
+	// ---- Network: Staking ----
+	StakingDataResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    StakingData `json:"data"`
+		Meta    Meta        `json:"meta"`
+	}
+
+	LiquidStakingShare {
+		Protocol  string  `json:"protocol"`
+		Share     float64 `json:"share"`
+		StakedETH float64 `json:"stakedEth"`
+	}
+
+	StakingData {
+		TotalStakedETH      float64              `json:"totalStakedEth"`
+		StakingPercentage   float64              `json:"stakingPercentage"`
+		ActiveValidators    int64                `json:"activeValidators"`
+		StakingYield        float64              `json:"stakingYield"`
+		EntryQueueLength    int64                `json:"entryQueueLength"`
+		ExitQueueLength     int64                `json:"exitQueueLength"`
+		EntryWaitTime       string               `json:"entryWaitTime"`
+		ExitWaitTime        string               `json:"exitWaitTime"`
+		LiquidStakingShares []LiquidStakingShare `json:"liquidStakingShares"`
+		ValidatorHistory    []TimeSeriesPoint    `json:"validatorHistory"`
+		YieldHistory        []TimeSeriesPoint    `json:"yieldHistory"`
+	}
+
+	// ---- Network: Performance ----
+	NetworkPerformanceResp {
+		Code    int                `json:"code"`
+		Message string             `json:"message"`
+		Data    NetworkPerformance `json:"data"`
+		Meta    Meta               `json:"meta"`
+	}
+
+	ClientShare {
+		Client string  `json:"client"`
+		Share  float64 `json:"share"`
+	}
+
+	NetworkPerformance {
+		AvgBlockTime     float64       `json:"avgBlockTime"`
+		BlockUtilization float64       `json:"blockUtilization"`
+		CurrentTPS       float64       `json:"currentTps"`
+		MaxTPS           float64       `json:"maxTps"`
+		TPSRatio         float64       `json:"tpsRatio"`
+		MissedSlots24h   int64         `json:"missedSlots24h"`
+		MissedSlotsRate  float64       `json:"missedSlotsRate"`
+		AttestationRate  float64       `json:"attestationRate"`
+		ClientDiversity  []ClientShare `json:"clientDiversity"`
+	}
+
+	// ---- Macro: ETH/BTC ----
+	ETHBTCDataResp {
+		Code    int        `json:"code"`
+		Message string     `json:"message"`
+		Data    ETHBTCData `json:"data"`
+		Meta    Meta       `json:"meta"`
+	}
+
+	ETHBTCData {
+		ETHBTCPrice         float64           `json:"ethBtcPrice"`
+		ETHBTCHistory       []TimeSeriesPoint `json:"ethBtcHistory"`
+		Correlation30d      float64           `json:"correlation30d"`
+		Correlation90d      float64           `json:"correlation90d"`
+		ETHDominance        float64           `json:"ethDominance"`
+		ETHDominanceHistory []TimeSeriesPoint `json:"ethDominanceHistory"`
+		ETHBTCPercentile    float64           `json:"ethBtcPercentile"`
+		ETHBTCSignal        string            `json:"ethBtcSignal"`
+	}
+
+	// ---- Macro: Indicators ----
+	MacroIndicatorsResp {
+		Code    int             `json:"code"`
+		Message string          `json:"message"`
+		Data    MacroIndicators `json:"data"`
+		Meta    Meta            `json:"meta"`
+	}
+
+	RateExpectation {
+		Date         string  `json:"date"`
+		ExpectedRate float64 `json:"expectedRate"`
+		Probability  float64 `json:"probability"`
+	}
+
+	MacroIndicators {
+		DXYIndex             float64           `json:"dxyIndex"`
+		DXYHistory           []TimeSeriesPoint `json:"dxyHistory"`
+		Treasury10Y          float64           `json:"treasury10y"`
+		Treasury10YHistory   []TimeSeriesPoint `json:"treasury10yHistory"`
+		NasdaqCorrelation30d float64           `json:"nasdaqCorrelation30d"`
+		NasdaqCorrelation90d float64           `json:"nasdaqCorrelation90d"`
+		FedFundsRate         float64           `json:"fedFundsRate"`
+		RateExpectations     []RateExpectation `json:"rateExpectations"`
+		FearGreedIndex       int               `json:"fearGreedIndex"`
+		FearGreedHistory     []TimeSeriesPoint `json:"fearGreedHistory"`
+		StablecoinMarketCap  float64           `json:"stablecoinMarketCap"`
+		StablecoinHistory    []TimeSeriesPoint `json:"stablecoinHistory"`
+	}
+
+	// ---- Alerts ----
+	AlertsResp {
+		Code    int     `json:"code"`
+		Message string  `json:"message"`
+		Data    []Alert `json:"data"`
+		Meta    Meta    `json:"meta"`
+	}
+
+	Alert {
+		ID             string  `json:"id"`
+		RuleID         string  `json:"ruleId"`
+		TriggeredAt    int64   `json:"triggeredAt"`
+		Severity       string  `json:"severity"`
+		Title          string  `json:"title"`
+		Message        string  `json:"message"`
+		MetricKey      string  `json:"metricKey"`
+		CurrentValue   float64 `json:"currentValue"`
+		ThresholdValue float64 `json:"thresholdValue"`
+		Acknowledged   bool    `json:"acknowledged"`
+	}
+
+	AlertHistoryReq {
+		Days int `form:"days,optional"`
+	}
+
+	AlertCondition {
+		Type                string  `json:"type"`
+		ReferenceValue      float64 `json:"referenceValue,optional"`
+		ReferencePeriodDays int     `json:"referencePeriodDays,optional"`
+	}
+
+	CreateAlertRuleReq {
+		MetricKey string         `json:"metricKey"`
+		Condition AlertCondition `json:"condition"`
+		Threshold float64        `json:"threshold"`
+		Severity  string         `json:"severity"`
+		Enabled   bool           `json:"enabled,optional"`
+		Message   string         `json:"message,optional"`
+	}
+
+	UpdateAlertRuleReq {
+		ID        string         `path:"id"`
+		MetricKey string         `json:"metricKey,optional"`
+		Condition AlertCondition `json:"condition,optional"`
+		Threshold float64        `json:"threshold,optional"`
+		Severity  string         `json:"severity,optional"`
+		Enabled   bool           `json:"enabled,optional"`
+		Message   string         `json:"message,optional"`
+	}
+
+	AlertRuleResp {
+		Code    int       `json:"code"`
+		Message string    `json:"message"`
+		Data    AlertRule `json:"data"`
+		Meta    Meta      `json:"meta"`
+	}
+
+	AlertRule {
+		ID        string         `json:"id"`
+		MetricKey string         `json:"metricKey"`
+		Condition AlertCondition `json:"condition"`
+		Threshold float64        `json:"threshold"`
+		Severity  string         `json:"severity"`
+		Enabled   bool           `json:"enabled"`
+		Message   string         `json:"message"`
+	}
+
+	// ---- Export ----
+	ExportChartReq {
+		ChartID string `json:"chartId"`
+		Format  string `json:"format"`
+		Width   int    `json:"width,optional"`
+		Height  int    `json:"height,optional"`
+	}
+
+	ExportCSVReq {
+		DataType  string `json:"dataType"`
+		TimeRange string `json:"timeRange,optional"`
+	}
+
+	ExportResp {
+		Code    int        `json:"code"`
+		Message string     `json:"message"`
+		Data    ExportData `json:"data"`
+		Meta    Meta       `json:"meta"`
+	}
+
+	ExportData {
+		URL      string `json:"url"`
+		Filename string `json:"filename"`
+		Size     int64  `json:"size"`
+	}
+
+	// ---- Share ----
+	ShareReq {
+		DashboardState string `json:"dashboardState"`
+	}
+
+	ShareResp {
+		Code    int       `json:"code"`
+		Message string    `json:"message"`
+		Data    ShareData `json:"data"`
+		Meta    Meta      `json:"meta"`
+	}
+
+	ShareData {
+		ShareURL  string `json:"shareUrl"`
+		ExpiresAt int64  `json:"expiresAt"`
+	}
+)
+
+@server(
+	prefix: /api/v1
+)
+service valuation-api {
+	@handler GetOverview
+	get /overview returns (OverviewResp)
+
+	@handler GetBurnData
+	get /onchain/burn returns (BurnDataResp)
+
+	@handler GetGasData
+	get /onchain/gas returns (GasDataResp)
+
+	@handler GetActivityData
+	get /onchain/activity returns (ActivityDataResp)
+
+	@handler GetTVLData
+	get /onchain/tvl returns (TVLDataResp)
+
+	@handler GetSupplyData
+	get /onchain/supply returns (SupplyDataResp)
+
+	@handler GetMarketData
+	get /market returns (MarketDataResp)
+
+	@handler GetPriceHistory
+	get /market/price-history (PriceHistoryReq) returns (PriceHistoryResp)
+
+	@handler GetValuation
+	get /valuation returns (ValuationResp)
+
+	@handler GetDCFValuation
+	get /valuation/dcf (DCFReq) returns (DCFResp)
+
+	@handler GetDistribution
+	get /valuation/distribution/:metric returns (DistributionResp)
+
+	@handler GetETFData
+	get /institutional/etf returns (ETFDataResp)
+
+	@handler GetGrayscaleData
+	get /institutional/grayscale returns (GrayscaleDataResp)
+
+	@handler GetInstitutionalHoldings
+	get /institutional/holdings returns (InstitutionalHoldingsResp)
+
+	@handler GetStakingData
+	get /network/staking returns (StakingDataResp)
+
+	@handler GetNetworkPerformance
+	get /network/performance returns (NetworkPerformanceResp)
+
+	@handler GetETHBTCData
+	get /macro/ethbtc returns (ETHBTCDataResp)
+
+	@handler GetMacroIndicators
+	get /macro/indicators returns (MacroIndicatorsResp)
+
+	@handler GetActiveAlerts
+	get /alerts returns (AlertsResp)
+
+	@handler GetAlertHistory
+	get /alerts/history (AlertHistoryReq) returns (AlertsResp)
+
+	@handler CreateAlertRule
+	post /alerts/rules (CreateAlertRuleReq) returns (AlertRuleResp)
+
+	@handler UpdateAlertRule
+	put /alerts/rules/:id (UpdateAlertRuleReq) returns (AlertRuleResp)
+
+	@handler DeleteAlertRule
+	delete /alerts/rules/:id returns (BaseResp)
+
+	@handler ExportChart
+	post /export/chart (ExportChartReq) returns (ExportResp)
+
+	@handler ExportCSV
+	post /export/csv (ExportCSVReq) returns (ExportResp)
+
+	@handler GenerateShareLink
+	post /share (ShareReq) returns (ShareResp)
+
+	@handler ForceRefresh
+	post /refresh returns (BaseResp)
+}

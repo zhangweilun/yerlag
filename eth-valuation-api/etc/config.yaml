@@ -1,0 +1,44 @@
+Name: valuation-api
+Host: 0.0.0.0
+Port: 8888
+
+# 数据库连接配置
+Database:
+  Driver: mysql
+  DataSource: "root:password@tcp(127.0.0.1:3306)/eth_valuation?charset=utf8mb4&parseTime=True&loc=Local"
+
+# Redis 连接配置
+Redis:
+  Host: 127.0.0.1:6379
+  Pass: ""
+  DB: 0
+
+# 外部 API 数据源配置
+DataSources:
+  Etherscan:
+    APIKey: ""
+    BaseURL: "https://api.etherscan.io/api"
+  CoinGecko:
+    APIKey: ""
+    BaseURL: "https://api.coingecko.com/api/v3"
+  DefiLlama:
+    BaseURL: "https://api.llama.fi"
+  Glassnode:
+    APIKey: ""
+    BaseURL: "https://api.glassnode.com/v1"
+  BeaconChain:
+    BaseURL: "https://beaconcha.in/api/v1"
+  TradFi:
+    APIKey: ""
+    BaseURL: "https://api.tradfi-data.example.com"
+
+# 缓存 TTL 配置（单位：秒）
+CacheTTL:
+  Price: 10
+  GasData: 300
+  OnChainMetrics: 300
+  TVLData: 300
+  InstitutionalData: 3600
+  NetworkData: 300
+  MacroData: 3600
+  ValuationScore: 300
