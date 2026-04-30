@@ -2,8 +2,11 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
+	"eth-valuation-api/internal/logic/market"
 	"eth-valuation-api/internal/svc"
+	"eth-valuation-api/internal/types"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
@@ -11,12 +14,18 @@ import (
 // GetMarketDataHandler returns the market data handler.
 func GetMarketDataHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: implement market data logic in subsequent tasks
-		httpx.OkJson(w, map[string]interface{}{
-			"code":    0,
-			"message": "ok",
-			"data":    map[string]interface{}{},
-			"meta":    map[string]interface{}{},
+		svc := market.NewMarketService(ctx)
+		data, err := svc.GetMarketData(r.Context())
+		if err != nil {
+			httpx.OkJson(w, types.ErrorResponse(500, err.Error()))
+			return
+		}
+
+		resp := types.SuccessResponse(data, types.Meta{
+			LastUpdated: time.Now().Unix(),
+			Source:      "live",
+			NextRefresh: time.Now().Add(10 * time.Second).Unix(),
 		})
+		httpx.OkJson(w, resp)
 	}
 }

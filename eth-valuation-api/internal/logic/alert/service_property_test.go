@@ -12,6 +12,7 @@ package alert
 // **Validates: Requirements 2.5, 3.6, 5.6, 8.5, 8.6, 9.5, 10.7, 11.6, 15.2, 15.4, 17.5**
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -396,5 +397,180 @@ func TestProperty2_AlertMetadata_Correctness(t *testing.T) {
 		assert.False(t, a.Acknowledged)
 		assert.NotEmpty(t, a.ID)
 		assert.NotZero(t, a.TriggeredAt)
+	})
+}
+
+// ---------------------------------------------------------------------------
+// Property 3: 预警严重程度排序
+// ---------------------------------------------------------------------------
+//
+// Feature: eth-valuation-dashboard, Property 3: 预警严重程度排序
+//
+// For any list of Alert objects with mixed severity levels, the
+// SortAlertsBySeverity function SHALL return a list where all "high" severity
+// alerts appear before all "medium" severity alerts, and all "medium" severity
+// alerts appear before all "low" severity alerts. The relative order of alerts
+// within the same severity level SHALL be preserved (stable sort).
+//
+// **Validates: Requirements 15.5**
+
+// genAlert generates a random Alert with a random severity.
+func genAlert() *rapid.Generator[Alert] {
+	return rapid.Custom[Alert](func(t *rapid.T) Alert {
+		return Alert{
+			ID:             rapid.StringMatching(`^alert-[a-z0-9]{6}$`).Draw(t, "alertID"),
+			RuleID:         rapid.StringMatching(`^rule-[a-z0-9]{4}$`).Draw(t, "ruleID"),
+			TriggeredAt:    rapid.Int64Range(1_000_000_000, 2_000_000_000).Draw(t, "triggeredAt"),
+			Severity:       genSeverity().Draw(t, "severity"),
+			Title:          rapid.SampledFrom([]string{"Alert A", "Alert B", "Alert C", "Alert D"}).Draw(t, "title"),
+			Message:        "test message",
+			MetricKey:      genMetricKey().Draw(t, "metricKey"),
+			CurrentValue:   genMetricValue().Draw(t, "currentValue"),
+			ThresholdValue: genThreshold().Draw(t, "thresholdValue"),
+			Acknowledged:   rapid.Bool().Draw(t, "acknowledged"),
+		}
+	})
+}
+
+// TestProperty3_SortAlertsBySeverity_Ordering verifies that after sorting,
+// all "high" alerts come before "medium", and all "medium" come before "low".
+func TestProperty3_SortAlertsBySeverity_Ordering(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		numAlerts := rapid.IntRange(0, 50).Draw(t, "numAlerts")
+		alerts := make([]Alert, numAlerts)
+		for i := range alerts {
+			alerts[i] = genAlert().Draw(t, "alert")
+		}
+
+		svc := NewAlertServiceWithRules(nil)
+		sorted := svc.SortAlertsBySeverity(alerts)
+
+		// Verify length is preserved.
+		assert.Equal(t, len(alerts), len(sorted),
+			"sorted slice should have same length as input")
+
+		// Verify ordering: severity rank should be non-decreasing.
+		for i := 1; i < len(sorted); i++ {
+			rankPrev := severityRank(sorted[i-1].Severity)
+			rankCurr := severityRank(sorted[i].Severity)
+			assert.LessOrEqual(t, rankPrev, rankCurr,
+				"alert at index %d (severity=%s, rank=%d) should not come after alert at index %d (severity=%s, rank=%d)",
+				i-1, sorted[i-1].Severity, rankPrev, i, sorted[i].Severity, rankCurr)
+		}
+	})
+}
+
+// TestProperty3_SortAlertsBySeverity_StableSort verifies that the relative
+// order of alerts with the same severity is preserved (stable sort property).
+func TestProperty3_SortAlertsBySeverity_StableSort(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		numAlerts := rapid.IntRange(2, 30).Draw(t, "numAlerts")
+		alerts := make([]Alert, numAlerts)
+		for i := range alerts {
+			alerts[i] = genAlert().Draw(t, "alert")
+			// Use index-based IDs to track original positions unambiguously.
+			alerts[i].ID = fmt.Sprintf("alert-%04d", i)
+		}
+
+		svc := NewAlertServiceWithRules(nil)
+		sorted := svc.SortAlertsBySeverity(alerts)
+
+		// For each severity level, extract the alerts in sorted order and verify
+		// they appear in the same relative order as in the original input.
+		for _, sev := range []string{"high", "medium", "low"} {
+			// Collect original indices of alerts with this severity.
+			var originalOrder []string
+			for _, a := range alerts {
+				if a.Severity == sev {
+					originalOrder = append(originalOrder, a.ID)
+				}
+			}
+			// Collect sorted indices of alerts with this severity.
+			var sortedOrder []string
+			for _, a := range sorted {
+				if a.Severity == sev {
+					sortedOrder = append(sortedOrder, a.ID)
+				}
+			}
+			// The relative order within the same severity must be preserved.
+			assert.Equal(t, originalOrder, sortedOrder,
+				"relative order of %s severity alerts should be preserved (stable sort)", sev)
+		}
+	})
+}
+
+// TestProperty3_SortAlertsBySeverity_DoesNotMutateInput verifies that the
+// original slice is not modified by the sort operation.
+func TestProperty3_SortAlertsBySeverity_DoesNotMutateInput(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		numAlerts := rapid.IntRange(1, 20).Draw(t, "numAlerts")
+		alerts := make([]Alert, numAlerts)
+		for i := range alerts {
+			alerts[i] = genAlert().Draw(t, "alert")
+			alerts[i].ID = fmt.Sprintf("alert-%04d", i)
+		}
+
+		// Make a copy of the original to compare after sorting.
+		original := make([]Alert, len(alerts))
+		copy(original, alerts)
+
+		svc := NewAlertServiceWithRules(nil)
+		_ = svc.SortAlertsBySeverity(alerts)
+
+		// Verify the input slice was not mutated.
+		for i := range alerts {
+			assert.Equal(t, original[i].ID, alerts[i].ID,
+				"input slice should not be mutated at index %d", i)
+			assert.Equal(t, original[i].Severity, alerts[i].Severity,
+				"input slice severity should not be mutated at index %d", i)
+		}
+	})
+}
+
+// TestProperty3_SortAlertsBySeverity_AllSameSeverity verifies that when all
+// alerts have the same severity, the order is completely preserved.
+func TestProperty3_SortAlertsBySeverity_AllSameSeverity(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		sev := genSeverity().Draw(t, "severity")
+		numAlerts := rapid.IntRange(1, 20).Draw(t, "numAlerts")
+		alerts := make([]Alert, numAlerts)
+		for i := range alerts {
+			alerts[i] = genAlert().Draw(t, "alert")
+			alerts[i].Severity = sev
+			alerts[i].ID = fmt.Sprintf("alert-%04d", i)
+		}
+
+		svc := NewAlertServiceWithRules(nil)
+		sorted := svc.SortAlertsBySeverity(alerts)
+
+		// When all severities are the same, order should be identical.
+		for i := range sorted {
+			assert.Equal(t, alerts[i].ID, sorted[i].ID,
+				"when all severities are %s, order should be preserved at index %d", sev, i)
+		}
+	})
+}
+
+// TestProperty3_SortAlertsBySeverity_Idempotent verifies that sorting an
+// already-sorted list produces the same result (idempotency).
+func TestProperty3_SortAlertsBySeverity_Idempotent(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		numAlerts := rapid.IntRange(0, 30).Draw(t, "numAlerts")
+		alerts := make([]Alert, numAlerts)
+		for i := range alerts {
+			alerts[i] = genAlert().Draw(t, "alert")
+			alerts[i].ID = fmt.Sprintf("alert-%04d", i)
+		}
+
+		svc := NewAlertServiceWithRules(nil)
+		sorted1 := svc.SortAlertsBySeverity(alerts)
+		sorted2 := svc.SortAlertsBySeverity(sorted1)
+
+		// Sorting twice should produce the same result.
+		require.Equal(t, len(sorted1), len(sorted2))
+		for i := range sorted1 {
+			assert.Equal(t, sorted1[i].ID, sorted2[i].ID,
+				"sorting should be idempotent at index %d", i)
+		}
 	})
 }

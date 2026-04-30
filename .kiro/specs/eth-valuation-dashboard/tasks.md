@@ -128,7 +128,7 @@
 - [x] 4. Checkpoint - 确保核心计算引擎测试通过
   - 确保所有测试通过，如有问题请询问用户。
 
-- [ ] 5. 后端估值引擎与预警系统
+- [x] 5. 后端估值引擎与预警系统
   - [x] 5.1 实现估值引擎 (Valuation_Engine)
     - 创建 `internal/logic/valuation/engine.go`
     - 实现 MVRV Ratio 评分计算（Req 7.1）
@@ -170,17 +170,17 @@
     - 使用 rapid 生成随机指标值、规则组合和启用/禁用状态，验证触发逻辑正确性
     - **Validates: Requirements 2.5, 3.6, 5.6, 8.5, 8.6, 9.5, 10.7, 11.6, 15.2, 15.4, 17.5**
 
-  - [-] 5.7 编写预警严重程度排序属性测试
+  - [x] 5.7 编写预警严重程度排序属性测试
     - **Property 3: 预警严重程度排序**
     - 使用 rapid 生成随机严重程度的预警列表，验证排序结果（high > medium > low，稳定排序）
     - **Validates: Requirements 15.5**
 
-- [ ] 6. Checkpoint - 确保估值引擎与预警系统测试通过
+- [x] 6. Checkpoint - 确保估值引擎与预警系统测试通过
   - 确保所有测试通过，如有问题请询问用户。
 
 
-- [ ] 7. 后端数据模块与外部 API 适配器
-  - [~] 7.1 实现外部数据源适配器
+- [x] 7. 后端数据模块与外部 API 适配器
+  - [x] 7.1 实现外部数据源适配器
     - 创建 `internal/fetcher/etherscan.go`（Etherscan API 适配器：Gas 数据、交易数据、销毁数据）
     - 创建 `internal/fetcher/coingecko.go`（CoinGecko API 适配器：价格、市值、交易量、OHLCV）
     - 创建 `internal/fetcher/defillama.go`（DefiLlama API 适配器：TVL、协议数据）
@@ -190,7 +190,7 @@
     - 每个适配器实现请求构造、响应解析、错误处理
     - _Requirements: 14.1, 14.4, 14.5_
 
-  - [~] 7.2 实现链上数据模块 (On_Chain_Module)
+  - [x] 7.2 实现链上数据模块 (On_Chain_Module)
     - 创建 `internal/logic/onchain/burn.go`（EIP-1559 销毁数据逻辑：24h/7d/30d/累计销毁量、年化销毁率）
     - 创建 `internal/logic/onchain/gas.go`（Gas 费用逻辑：当前均价、费用收入、市费率、高费用标记）
     - 创建 `internal/logic/onchain/activity.go`（活跃度逻辑：DAA、交易笔数、新增地址、NVT Ratio、L2 对比）
@@ -199,102 +199,102 @@
     - 编写对应的 handler 和路由注册
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.6, 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.4, 5.5, 17.1, 17.2, 17.3, 17.4_
 
-  - [~] 7.3 编写链上数据模块单元测试
+  - [x] 7.3 编写链上数据模块单元测试
     - 使用 Mock 外部 API 测试各子模块的数据获取和计算逻辑
     - 测试 Gas 高费用标记、NVT 信号分类、通胀/通缩标记等边界条件
     - _Requirements: 2.1-2.6, 3.1-3.6, 4.1-4.7, 5.1-5.6, 17.1-17.5_
 
-  - [~] 7.4 实现市场数据模块 (Market_Module)
+  - [x] 7.4 实现市场数据模块 (Market_Module)
     - 创建 `internal/logic/market/market.go`（市场数据逻辑：实时价格、交易量、市值、ATH 回撤）
     - 创建 `internal/logic/market/price_history.go`（历史价格逻辑：OHLCV 数据、时间范围过滤）
     - 实现交易所价格差异计算
     - 编写对应的 handler 和路由注册
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
-  - [~] 7.5 实现机构数据模块 (Institutional_Module)
+  - [x] 7.5 实现机构数据模块 (Institutional_Module)
     - 创建 `internal/logic/institutional/etf.go`（ETF 数据逻辑：持仓量、净流入/流出、占比、发行商排名）
     - 创建 `internal/logic/institutional/grayscale.go`（灰度信托逻辑：持仓、NAV、溢价/折价率）
     - 创建 `internal/logic/institutional/holdings.go`（机构持仓逻辑：大型机构汇总、CME 期货 OI）
     - 编写对应的 handler 和路由注册
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.7, 9.1, 9.2, 9.3, 9.4_
 
-  - [~] 7.6 实现网络健康模块 (Network_Module)
+  - [x] 7.6 实现网络健康模块 (Network_Module)
     - 创建 `internal/logic/network/staking.go`（质押数据逻辑：总质押量、验证者数量、收益率、队列、流动性质押份额）
     - 创建 `internal/logic/network/performance.go`（网络性能逻辑：出块时间、TPS、missed slots、客户端多样性）
     - 编写对应的 handler 和路由注册
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 11.1, 11.2, 11.3, 11.4, 11.5_
 
-  - [~] 7.7 实现宏观经济模块 (Macro_Module)
+  - [x] 7.7 实现宏观经济模块 (Macro_Module)
     - 创建 `internal/logic/macro/ethbtc.go`（ETH/BTC 逻辑：价格、相关系数、ETH Dominance、百分位信号）
     - 创建 `internal/logic/macro/indicators.go`（宏观指标逻辑：DXY、国债收益率、纳斯达克相关性、联邦基金利率、恐惧贪婪指数、稳定币市值）
     - 编写对应的 handler 和路由注册
     - _Requirements: 12.1, 12.2, 12.3, 12.4, 13.1, 13.2, 13.3, 13.4, 13.5, 13.6_
 
-  - [~] 7.8 实现估值与预警 API 端点
+  - [x] 7.8 实现估值与预警 API 端点
     - 编写估值相关 handler（GetValuation、GetDCFValuation、GetDistribution）
     - 编写预警相关 handler（GetActiveAlerts、GetAlertHistory、CreateAlertRule、UpdateAlertRule、DeleteAlertRule）
     - 编写 Overview handler（聚合各模块摘要数据）
     - _Requirements: 1.1, 1.3, 7.1-7.6, 15.1-15.5_
 
-  - [~] 7.9 实现定时调度器 (Scheduler)
+  - [x] 7.9 实现定时调度器 (Scheduler)
     - 创建 `internal/scheduler/cron.go`，使用 cron 定时触发各模块数据刷新
     - 配置刷新频率：价格 10s、链上数据 5min、机构数据 1h、网络数据 5min、宏观数据 1h
     - 在数据刷新后自动触发预警评估
     - _Requirements: 14.1_
 
-  - [~] 7.10 实现导出与分享 API 端点
+  - [x] 7.10 实现导出与分享 API 端点
     - 编写 ExportCSV handler（将数据记录导出为 CSV 格式）
     - 编写 ExportChart handler（服务端图表导出支持）
     - 编写 GenerateShareLink handler（生成分享链接，保存仪表板状态到数据库）
     - 编写 ForceRefresh handler（强制刷新所有模块数据）
     - _Requirements: 14.3, 16.1, 16.2, 16.3, 16.4_
 
-- [ ] 8. Checkpoint - 确保后端所有 API 端点测试通过
+- [x] 8. Checkpoint - 确保后端所有 API 端点测试通过
   - 确保所有测试通过，如有问题请询问用户。
 
 - [ ] 9. 前端项目初始化与基础架构
-  - [~] 9.1 初始化 React + TypeScript 项目
+  - [x] 9.1 初始化 React + TypeScript 项目
     - 使用 Vite 创建 React + TypeScript 项目
     - 安装依赖：zustand（状态管理）、recharts 或 echarts（图表）、axios（HTTP 请求）
     - 配置 Vitest 测试框架和 fast-check 属性测试库
     - 配置 ESLint、Prettier
     - _Requirements: 1.1_
 
-  - [~] 9.2 实现 API 客户端与轮询服务
+  - [x] 9.2 实现 API 客户端与轮询服务
     - 创建 `src/api/client.ts`，封装 axios 实例和所有 API 端点调用函数
     - 创建 `src/api/polling.ts`，实现 REST 轮询服务（按配置间隔轮询各数据端点）
     - 配置轮询间隔：价格 10s、链上 5min、机构 1h、网络 5min、宏观 1h、预警 30s
     - 实现轮询失败时保留上次数据、标注最后更新时间的逻辑
     - _Requirements: 6.1, 14.1, 14.4_
 
-  - [~] 9.3 实现 Zustand 全局状态管理
+  - [x] 9.3 实现 Zustand 全局状态管理
     - 创建 `src/store/dashboard.ts`，定义 DashboardStore
     - 实现各模块数据状态（onChainData、marketData、institutionalData、networkData、macroData、valuationScore）
     - 实现 UI 状态（theme、activeAlerts、isLoading、lastUpdated、errors）
     - 实现 refreshAll、refreshModule、toggleTheme、setAlertRule 等操作
     - _Requirements: 1.2, 1.5, 14.3_
 
-  - [~] 9.4 实现主题系统（浅色/深色模式）
+  - [x] 9.4 实现主题系统（浅色/深色模式）
     - 创建 `src/context/ThemeContext.tsx`，实现主题上下文
     - 定义浅色和深色主题的 CSS 变量/样式
     - 实现主题切换按钮组件
     - _Requirements: 1.5_
 
-  - [~] 9.5 编写轮询服务和状态管理单元测试
+  - [x] 9.5 编写轮询服务和状态管理单元测试
     - 测试轮询间隔配置正确性
     - 测试轮询失败时的数据保留逻辑
     - 测试主题切换功能
     - _Requirements: 1.5, 14.1, 14.4_
 
 - [ ] 10. 前端 Dashboard 布局与总览组件
-  - [~] 10.1 实现 Dashboard 主布局
+  - [x] 10.1 实现 Dashboard 主布局
     - 创建 `src/pages/Dashboard.tsx` 主页面组件
     - 实现顶部摘要栏（ETH 价格、24h 涨跌幅、市值排名、综合估值评分）
     - 实现五大维度分区布局（链上数据、市场数据、机构数据、网络健康、宏观经济）
     - 实现 React Error Boundary 包裹每个模块
     - _Requirements: 1.1, 1.2, 1.3_
 
-  - [~] 10.2 实现通用图表渲染器组件
+  - [x] 10.2 实现通用图表渲染器组件
     - 创建 `src/components/charts/` 目录
     - 实现 LineChart（折线图）、AreaChart（面积图）、StackedAreaChart（堆叠面积图）组件
     - 实现 BarChart（柱状图）、CandlestickChart（K 线图）组件
@@ -302,13 +302,13 @@
     - 所有图表支持 responsive 自适应和 tooltip 交互
     - _Requirements: 2.2, 2.6, 3.2, 4.2, 4.3, 5.2, 5.3, 6.4, 7.5, 7.6_
 
-  - [~] 10.3 编写图表组件单元测试
+  - [x] 10.3 编写图表组件单元测试
     - 使用 React Testing Library 验证各图表组件正确渲染
     - 测试图表接收正确的数据格式
     - _Requirements: 2.2, 6.4, 7.5_
 
 - [ ] 11. 前端数据展示模块
-  - [~] 11.1 实现链上数据展示组件
+  - [x] 11.1 实现链上数据展示组件
     - 创建 `src/components/onchain/BurnDataPanel.tsx`（销毁数据面板：24h/7d/30d/累计销毁量、年化销毁率、每日销毁趋势图、供应量堆叠面积图）
     - 创建 `src/components/onchain/GasDataPanel.tsx`（Gas 费用面板：当前均价、费用收入、市费率、历史趋势图、高费用标记）
     - 创建 `src/components/onchain/ActivityPanel.tsx`（活跃度面板：DAA、交易笔数、新增地址、NVT Ratio、L2 对比柱状图）
@@ -316,94 +316,94 @@
     - 创建 `src/components/onchain/SupplyPanel.tsx`（供应量面板：总供应、分类分布、交易所余额趋势、通胀/通缩状态）
     - _Requirements: 2.1-2.6, 3.1-3.5, 4.1-4.5, 5.1-5.5, 17.1-17.4_
 
-  - [~] 11.2 实现市场数据展示组件
+  - [x] 11.2 实现市场数据展示组件
     - 创建 `src/components/market/MarketOverview.tsx`（市场总览：实时价格、涨跌幅、交易量、市值、ATH 回撤）
     - 创建 `src/components/market/PriceChart.tsx`（K 线图：支持 1d/1w/1m/3m/1y/all 时间范围切换）
     - 创建 `src/components/market/ExchangeSpread.tsx`（交易所价差表格）
     - _Requirements: 6.1-6.6_
 
-  - [~] 11.3 实现估值模型展示组件
+  - [x] 11.3 实现估值模型展示组件
     - 创建 `src/components/valuation/ValuationScore.tsx`（综合评分展示：分数、状态标签、雷达图）
     - 创建 `src/components/valuation/ModelDetails.tsx`（各模型详情：MVRV、P/F、DCF、S2F、NVT、ETH/BTC）
     - 创建 `src/components/valuation/DistributionChart.tsx`（历史分布图，标注当前值位置）
     - _Requirements: 1.3, 7.1-7.6_
 
-  - [~] 11.4 实现机构数据展示组件
+  - [x] 11.4 实现机构数据展示组件
     - 创建 `src/components/institutional/ETFPanel.tsx`（ETF 面板：持仓量、净流入/流出柱状图、占比、发行商排名）
     - 创建 `src/components/institutional/GrayscalePanel.tsx`（灰度面板：持仓、NAV、溢价/折价率趋势）
     - 创建 `src/components/institutional/HoldingsPanel.tsx`（机构持仓面板：大型机构汇总、CME 期货 OI 趋势）
     - _Requirements: 8.1-8.4, 8.7, 9.1-9.4_
 
-  - [~] 11.5 实现网络健康展示组件
+  - [x] 11.5 实现网络健康展示组件
     - 创建 `src/components/network/StakingPanel.tsx`（质押面板：总质押量、验证者数量、收益率、队列、流动性质押份额饼图）
     - 创建 `src/components/network/PerformancePanel.tsx`（性能面板：出块时间、TPS、missed slots、客户端多样性饼图）
     - _Requirements: 10.1-10.6, 11.1-11.5_
 
-  - [~] 11.6 实现宏观经济展示组件
+  - [x] 11.6 实现宏观经济展示组件
     - 创建 `src/components/macro/ETHBTCPanel.tsx`（ETH/BTC 面板：价格趋势、相关系数、ETH Dominance、百分位信号）
     - 创建 `src/components/macro/MacroIndicatorsPanel.tsx`（宏观指标面板：DXY 叠加图、国债收益率叠加图、纳斯达克相关性、利率预期、恐惧贪婪指数、稳定币市值）
     - _Requirements: 12.1-12.4, 13.1-13.6_
 
-  - [~] 11.7 编写数据展示组件单元测试
+  - [x] 11.7 编写数据展示组件单元测试
     - 使用 React Testing Library 验证各面板组件正确渲染所需数据字段
     - 测试加载状态和错误状态的展示
     - 测试时间范围切换逻辑
     - _Requirements: 1.1, 1.2, 6.4_
 
-- [ ] 12. Checkpoint - 确保前端组件渲染测试通过
+- [x] 12. Checkpoint - 确保前端组件渲染测试通过
   - 确保所有测试通过，如有问题请询问用户。
 
 - [ ] 13. 前端预警、导出与分享功能
-  - [~] 13.1 实现预警通知组件
+  - [x] 13.1 实现预警通知组件
     - 创建 `src/components/alert/AlertBanner.tsx`（顶部预警通知横幅，按严重程度排序展示）
     - 创建 `src/components/alert/AlertHistory.tsx`（预警历史记录列表，展示过去 30 天预警）
     - 创建 `src/components/alert/AlertRuleManager.tsx`（预警规则管理：创建、编辑、启用/禁用、删除）
     - _Requirements: 15.1-15.5_
 
-  - [~] 13.2 实现数据导出功能
+  - [x] 13.2 实现数据导出功能
     - 创建 `src/utils/export.ts`，实现图表导出为 PNG/SVG 功能
     - 实现数据表格导出为 CSV 功能（前端生成）
     - 在各图表和数据面板添加导出按钮
     - _Requirements: 16.1, 16.2, 16.4_
 
-  - [~] 13.3 编写 CSV 导出往返属性测试
+  - [x] 13.3 编写 CSV 导出往返属性测试
     - **Property 14: CSV 导出往返正确性**
     - 使用 fast-check 生成随机数据记录（含字符串和数字字段），验证导出 CSV 后解析回来与原始数据一致
     - **Validates: Requirements 16.2**
 
-  - [~] 13.4 实现分享链接功能
+  - [x] 13.4 实现分享链接功能
     - 创建 `src/components/share/ShareDialog.tsx`（分享对话框：生成链接、复制链接）
     - 实现从分享链接恢复仪表板状态的逻辑
     - _Requirements: 16.3_
 
-  - [~] 13.5 编写预警组件和导出功能单元测试
+  - [x] 13.5 编写预警组件和导出功能单元测试
     - 测试预警横幅按严重程度排序展示
     - 测试预警规则 CRUD 操作
     - 测试导出按钮触发下载
     - _Requirements: 15.1-15.5, 16.1-16.4_
 
 - [ ] 14. 前端集成与全局联调
-  - [~] 14.1 集成所有模块到 Dashboard 主页面
+  - [x] 14.1 集成所有模块到 Dashboard 主页面
     - 在 Dashboard.tsx 中组装所有数据展示模块
     - 连接 Zustand store 与各组件
     - 启动轮询服务，确保各模块数据自动刷新
     - 实现手动刷新按钮（ForceRefresh）
     - _Requirements: 1.1, 1.2, 1.4, 14.3_
 
-  - [~] 14.2 实现前端错误边界与降级展示
+  - [x] 14.2 实现前端错误边界与降级展示
     - 为每个模块添加 Error Boundary
     - 实现各模块独立的加载状态（skeleton/spinner）和错误状态展示
     - 实现数据最后更新时间标注
     - 实现数据源不可用警告展示
     - _Requirements: 14.4, 14.5_
 
-  - [~] 14.3 编写前端集成测试
+  - [x] 14.3 编写前端集成测试
     - 测试 Dashboard 初始加载流程
     - 测试手动刷新功能
     - 测试单模块错误不影响其他模块
     - _Requirements: 1.4, 14.3, 14.4_
 
-- [ ] 15. Final Checkpoint - 确保所有测试通过
+- [x] 15. Final Checkpoint - 确保所有测试通过
   - 确保所有测试通过，如有问题请询问用户。
 
 ## Notes

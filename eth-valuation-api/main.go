@@ -7,6 +7,7 @@ import (
 	"eth-valuation-api/internal/config"
 	"eth-valuation-api/internal/handler"
 	"eth-valuation-api/internal/middleware"
+	"eth-valuation-api/internal/scheduler"
 	"eth-valuation-api/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
@@ -30,6 +31,11 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
+
+	// Start the background data refresh scheduler.
+	sched := scheduler.NewScheduler(ctx)
+	sched.Start()
+	defer sched.Stop()
 
 	fmt.Printf("Starting valuation-api server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
